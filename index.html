@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RL Bazar | Gent's Wear & Baby Shop — rlbazar.com</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#0B0B0D',
+            charcoal: '#121216',
+            card: '#18181D',
+            crimson: {
+              DEFAULT: '#E50914',
+              dark: '#B80710',
+              glow: 'rgba(229, 9, 20, 0.35)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0B0B0D;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+    }
+    /* Custom scrollbar for dark mode */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0B0D;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272A;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #E50914;
+    }
+    .red-glow {
+      box-shadow: 0 0 25px rgba(229, 9, 20, 0.25);
+    }
+    .red-glow-hover:hover {
+      box-shadow: 0 10px 30px -5px rgba(229, 9, 20, 0.4);
+    }
+    .hero-pattern {
+      background-image: radial-gradient(circle at 80% 20%, rgba(229, 9, 20, 0.18) 0%, transparent 45%),
+                        radial-gradient(circle at 15% 80%, rgba(229, 9, 20, 0.12) 0%, transparent 40%);
+    }
+  </style>
+</head>
+<body class="bg-obsidian text-white antialiased selection:bg-crimson selection:text-white">
+
+  <!-- 1. TOP ANNOUNCEMENT BAR -->
+  <div class="bg-gradient-to-r from-[#8E0000] via-crimson to-[#8E0000] text-white text-xs sm:text-sm py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 text-center">
+      <div class="flex items-center gap-2 font-medium">
+        <span class="inline-block w-2 h-2 rounded-full bg-white animate-pulse"></span>
+        <span>Nationwide Cash on Delivery | Premium Gent's & Baby Fashion</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold">
+        <a href="https://wa.me/8801987007398" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center gap-1.5">
+          <i class="fa-brands fa-whatsapp text-sm"></i> Baby Shop WP: 01987007398
+        </a>
+        <span class="hidden sm:inline text-white/50">|</span>
+        <a href="tel:+8801612168888" class="hover:underline flex items-center gap-1.5">
+          <i class="fa-solid fa-phone text-xs"></i> Gent's Wear Call: 01612168888
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. STICKY NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-obsidian/90 backdrop-blur-md border-b border-zinc-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20 gap-4">
+        
+        <!-- Brand Logo -->
+        <a href="#home" class="flex items-center gap-3 group shrink-0">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-crimson flex items-center justify-center font-black text-xl tracking-tighter text-white shadow-lg shadow-crimson/30 group-hover:scale-105 transition-transform">
+            RL
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xl sm:text-2xl font-black tracking-tight text-white">RL <span class="text-crimson">BAZAR</span></span>
+            </div>
+            <p class="text-[10px] sm:text-xs text-zinc-400 tracking-widest uppercase -mt-1">Gent's Wear & Baby Shop</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-zinc-300">
+          <a href="#home" class="hover:text-crimson transition-colors">Home</a>
+          <a href="#collections" onclick="filterProducts('gents')" class="hover:text-crimson transition-colors">Gent's Wear</a>
+          <a href="#collections" onclick="filterProducts('baby')" class="hover:text-crimson transition-colors">Baby Shop</a>
+          <a href="#collections" onclick="filterProducts('bestseller')" class="hover:text-crimson transition-colors">New Arrivals</a>
+          <a href="#contact-footer" class="hover:text-crimson transition-colors">Contact</a>
+        </nav>
+
+        <!-- Search & Actions -->
+        <div class="flex items-center gap-2.5 sm:gap-4">
+          <!-- Search Box (Desktop/Tablet) -->
+          <div class="relative hidden md:block">
+            <input 
+              type="text" 
+              id="searchInput" 
+              oninput="handleSearch(this.value)"
+              placeholder="Search Panjabi, Shirt, Romper..." 
+              class="bg-card border border-zinc-800 focus:border-crimson rounded-full py-2 pl-9 pr-4 text-xs sm:text-sm text-white placeholder-zinc-500 w-48 lg:w-64 focus:outline-none transition-colors"
+            />
+            <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          </div>
+
+          <!-- Cart Trigger Button -->
+          <button 
+            onclick="toggleCart(true)" 
+            class="relative p-2.5 sm:p-3 rounded-xl bg-card hover:bg-zinc-800 border border-zinc-800 hover:border-crimson/60 text-white transition-all flex items-center gap-2"
+            aria-label="Open Shopping Cart"
+          >
+            <i class="fa-solid fa-bag-shopping text-crimson text-base sm:text-lg"></i>
+            <span class="hidden sm:inline text-xs font-semibold">Cart</span>
+            <span id="cartBadge" class="absolute -top-1.5 -right-1.5 bg-crimson text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">
+              0
+            </span>
+          </button>
+
+          <!-- Mobile Menu Button -->
+          <button 
+            onclick="toggleMobileMenu()" 
+            class="lg:hidden p-2.5 rounded-xl bg-card border border-zinc-800 text-zinc-300 hover:text-white"
+            aria-label="Toggle Menu"
+          >
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Search & Nav Drawer -->
+      <div id="mobileMenu" class="hidden lg:hidden pb-4 pt-2 border-t border-zinc-800/80 space-y-3">
+        <div class="relative">
+          <input 
+            type="text" 
+            oninput="handleSearch(this.value)"
+            placeholder="Search clothing items..." 
+            class="w-full bg-card border border-zinc-800 focus:border-crimson rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-zinc-500 focus:outline-none"
+          />
+          <i class="fa-solid fa-magnifying-glass text-zinc-500 text-sm absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-sm font-medium">
+          <a href="#home" onclick="toggleMobileMenu()" class="p-2.5 rounded-lg bg-card hover:bg-crimson/20 text-zinc-200">Home</a>
+          <a href="#collections" onclick="filterProducts('gents'); toggleMobileMenu()" class="p-2.5 rounded-lg bg-card hover:bg-crimson/20 text-zinc-200">Gent's Wear</a>
+          <a href="#collections" onclick="filterProducts('baby'); toggleMobileMenu()" class="p-2.5 rounded-lg bg-card hover:bg-crimson/20 text-zinc-200">Baby Shop</a>
+          <a href="#contact-footer" onclick="toggleMobileMenu()" class="p-2.5 rounded-lg bg-card hover:bg-crimson/20 text-zinc-200">Contact & Social</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. HERO SECTION -->
+  <section id="home" class="relative overflow-hidden hero-pattern border-b border-zinc-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        
+        <!-- Left Content -->
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-crimson/15 border border-crimson/40 text-crimson text-xs font-bold uppercase tracking-wider">
+            <i class="fa-solid fa-fire"></i> Official Store • rlbazar.com
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
+            Bold Style for <span class="text-crimson">Gentlemen</span> &amp; Pure Comfort for <span class="text-white underline decoration-crimson decoration-4 underline-offset-8">Little Ones</span>
+          </h1>
+
+          <p class="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            Welcome to <strong class="text-white">RL Bazar</strong> — your trusted fashion destination for premium <span class="text-zinc-200 font-medium">Gent's Wear</span> and adorable, skin-friendly <span class="text-zinc-200 font-medium">Baby Shop</span> collections. Order online or directly via WhatsApp &amp; Phone!
+          </p>
+
+          <!-- Primary CTAs -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+            <a 
+              href="#collections" 
+              onclick="filterProducts('gents')"
+              class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-crimson hover:bg-crimson-dark text-white font-bold text-sm sm:text-base transition-all red-glow-hover flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-user-tie"></i> Shop Gent's Wear
+            </a>
+            <a 
+              href="#collections" 
+              onclick="filterProducts('baby')"
+              class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-card hover:bg-zinc-800 border border-zinc-700 hover:border-crimson text-white font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-baby"></i> Explore Baby Shop
+            </a>
+          </div>
+
+          <!-- Direct Quick Hotline Strip -->
+          <div class="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-xs sm:text-sm">
+            <a 
+              href="https://wa.me/8801987007398?text=Assalamu%20Alaikum%20RL%20Bazar!%20I%20want%20to%20place%20an%20order." 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-colors font-semibold"
+            >
+              <i class="fa-brands fa-whatsapp text-lg"></i>
+              <span>RL Bazar &amp; Baby Shop: <strong>01987007398</strong></span>
+            </a>
+            <a 
+              href="tel:+8801612168888"
+              class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-crimson/10 border border-crimson/30 text-red-400 hover:bg-crimson/20 transition-colors font-semibold"
+            >
+              <i class="fa-solid fa-phone-volume text-base text-crimson"></i>
+              <span>Gent's Wear Hotline: <strong>01612168888</strong></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Visual Showcase Card -->
+        <div class="lg:col-span-5">
+          <div class="relative rounded-3xl bg-gradient-to-br from-zinc-900 via-card to-black p-6 sm:p-8 border border-zinc-800 red-glow">
+            <div class="absolute -top-3 -right-3 bg-crimson text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+              New Season Drop
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Gent's Preview Card -->
+              <div class="group rounded-2xl overflow-hidden bg-charcoal border border-zinc-800/90 relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" 
+                  onerror="this.src='https://placehold.co/400x500/18181D/E50914?text=Gents+Wear'"
+                  alt="RL Bazar Gent's Wear" 
+                  class="w-full h-52 sm:h-60 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-3.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-crimson">RL Bazar</span>
+                  <h3 class="text-sm font-bold text-white">Gent's Wear</h3>
+                  <p class="text-[11px] text-zinc-400">Panjabi, Shirts &amp; Jackets</p>
+                </div>
+              </div>
+
+              <!-- Baby Shop Preview Card -->
+              <div class="group rounded-2xl overflow-hidden bg-charcoal border border-zinc-800/90 relative mt-6">
+                <img 
+                  src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80" 
+                  onerror="this.src='https://placehold.co/400x500/18181D/E50914?text=Baby+Shop'"
+                  alt="RL Bazar Baby Shop" 
+                  class="w-full h-52 sm:h-60 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-3.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-crimson">RL Bazar</span>
+                  <h3 class="text-sm font-bold text-white">&amp; Baby Shop</h3>
+                  <p class="text-[11px] text-zinc-400">Soft Cotton &amp; Party Sets</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trust Stats -->
+            <div class="mt-6 pt-5 border-t border-zinc-800 grid grid-cols-3 gap-2 text-center">
+              <div>
+                <p class="text-lg sm:text-xl font-black text-white">100%</p>
+                <p class="text-[11px] text-zinc-400">Premium Fabric</p>
+              </div>
+              <div class="border-x border-zinc-800">
+                <p class="text-lg sm:text-xl font-black text-crimson">24/7</p>
+                <p class="text-[11px] text-zinc-400">WP &amp; Call Support</p>
+              </div>
+              <div>
+                <p class="text-lg sm:text-xl font-black text-white">COD</p>
+                <p class="text-[11px] text-zinc-400">All Over BD</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. DUAL BRAND SPOTLIGHT CARDS -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+      
+      <!-- Card 1: RL Bazar Gent's Wear -->
+      <div class="rounded-3xl bg-gradient-to-br from-card to-charcoal border border-zinc-800 hover:border-crimson/60 p-6 sm:p-8 transition-all group relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-32 h-32 bg-crimson/10 rounded-bl-full pointer-events-none"></div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <span class="inline-block px-3 py-1 rounded-lg bg-crimson/20 text-crimson text-xs font-bold uppercase tracking-wider">
+              Men's Fashion Division
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">RL Bazar <span class="text-crimson">Gent's Wear</span></h2>
+            <p class="text-sm text-zinc-400 max-w-md">
+              Tailored Slim-Fit Shirts, Luxury Festive Panjabis, Polos, and Winter Jackets crafted for modern gentlemen.
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-crimson/15 border border-crimson/30 flex items-center justify-center text-crimson text-2xl shrink-0">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+          <a 
+            href="tel:+8801612168888" 
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-crimson hover:bg-crimson-dark text-white font-bold text-sm transition-all shadow-lg shadow-crimson/20"
+          >
+            <i class="fa-solid fa-phone"></i> Call: 01612168888
+          </a>
+          <button 
+            onclick="filterProducts('gents'); document.getElementById('collections').scrollIntoView({behavior:'smooth'})"
+            class="text-sm font-semibold text-zinc-300 hover:text-crimson transition-colors flex items-center gap-1.5"
+          >
+            Browse Collection <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2: RL Bazar & Baby Shop -->
+      <div class="rounded-3xl bg-gradient-to-br from-card to-charcoal border border-zinc-800 hover:border-crimson/60 p-6 sm:p-8 transition-all group relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-32 h-32 bg-crimson/10 rounded-bl-full pointer-events-none"></div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <span class="inline-block px-3 py-1 rounded-lg bg-crimson/20 text-crimson text-xs font-bold uppercase tracking-wider">
+              Kids &amp; Infant Division
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">RL Bazar <span class="text-crimson">&amp; Baby Shop</span></h2>
+            <p class="text-sm text-zinc-400 max-w-md">
+              100% Breathable Organic Cotton Rompers, Cute Baby Sets, Kids Festive Wear &amp; Cozy Hoodies.
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-crimson/15 border border-crimson/30 flex items-center justify-center text-crimson text-2xl shrink-0">
+            <i class="fa-solid fa-baby-carriage"></i>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+          <a 
+            href="https://wa.me/8801987007398?text=Hello%20RL%20Bazar%20%26%20Baby%20Shop!%20I%20would%20like%20to%20see%20baby%20clothing%20collections." 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/20"
+          >
+            <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp: 01987007398
+          </a>
+          <button 
+            onclick="filterProducts('baby'); document.getElementById('collections').scrollIntoView({behavior:'smooth'})"
+            class="text-sm font-semibold text-zinc-300 hover:text-crimson transition-colors flex items-center gap-1.5"
+          >
+            Browse Baby Shop <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. INTERACTIVE PRODUCT CATALOG -->
+  <section id="collections" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    
+    <!-- Section Header & Filter Tabs -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <span class="text-crimson font-bold text-xs uppercase tracking-widest">Curated Fashion</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-white mt-1">Featured <span class="text-crimson">Collections</span></h2>
+      </div>
+
+      <!-- Filter Pills -->
+      <div class="flex flex-wrap items-center gap-2" id="filterTabs">
+        <button onclick="filterProducts('all')" data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-crimson text-white transition-all">
+          All Items
+        </button>
+        <button onclick="filterProducts('gents')" data-filter="gents" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-card text-zinc-300 hover:text-white border border-zinc-800 transition-all">
+          Gent's Wear
+        </button>
+        <button onclick="filterProducts('baby')" data-filter="baby" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-card text-zinc-300 hover:text-white border border-zinc-800 transition-all">
+          Baby Shop
+        </button>
+        <button onclick="filterProducts('bestseller')" data-filter="bestseller" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-card text-zinc-300 hover:text-white border border-zinc-800 transition-all">
+          Best Sellers
+        </button>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Dynamically populated by JS -->
+    </div>
+
+    <!-- Empty Search State -->
+    <div id="emptyState" class="hidden text-center py-16 bg-card rounded-3xl border border-zinc-800">
+      <i class="fa-solid fa-shirt text-4xl text-zinc-600 mb-3"></i>
+      <h3 class="text-lg font-bold text-white">No matching items found</h3>
+      <p class="text-sm text-zinc-400 mt-1">Try resetting your search or browse all categories.</p>
+      <button onclick="resetFilters()" class="mt-4 px-5 py-2 rounded-xl bg-crimson text-white text-sm font-bold">
+        Show All Products
+      </button>
+    </div>
+  </section>
+
+  <!-- SOCIAL & TIKTOK PROMO BANNER -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="rounded-3xl bg-gradient-to-r from-charcoal via-[#1C0B0E] to-charcoal border border-crimson/30 p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+      <div class="space-y-2 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 text-crimson text-xs font-bold uppercase tracking-wider">
+          <i class="fa-brands fa-tiktok"></i> Watch Live Dress Showcases
+        </div>
+        <h3 class="text-2xl sm:text-3xl font-black text-white">Follow <span class="text-crimson">RL Bazar</span> on TikTok &amp; Facebook</h3>
+        <p class="text-sm text-zinc-400 max-w-xl">
+          Check out real fabric videos, new baby dress arrivals, and exclusive live discount offers on our official TikTok and Facebook page!
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-3 shrink-0">
+        <a 
+          href="https://www.tiktok.com/@rl.bazar.baby.sho" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="px-5 py-3 rounded-xl bg-black hover:bg-zinc-900 border border-zinc-700 hover:border-crimson text-white font-bold text-sm flex items-center gap-2.5 transition-all"
+        >
+          <i class="fa-brands fa-tiktok text-crimson text-base"></i> @rl.bazar.baby.sho
+        </a>
+        <a 
+          href="https://www.facebook.com/search/top?q=RL%20Bazar" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="px-5 py-3 rounded-xl bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/40 text-white font-bold text-sm flex items-center gap-2.5 transition-all"
+        >
+          <i class="fa-brands fa-facebook text-[#1877F2] text-base"></i> Facebook: RL Bazar
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. SOCIAL & STORE INFO FOOTER -->
+  <footer id="contact-footer" class="bg-charcoal border-t border-zinc-900 mt-12 pt-14 pb-24 sm:pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-10 border-b border-zinc-800/80">
+        
+        <!-- Brand Info -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-crimson flex items-center justify-center font-black text-xl text-white">
+              RL
+            </div>
+            <div>
+              <span class="text-xl font-black text-white">RL <span class="text-crimson">BAZAR</span></span>
+              <p class="text-[11px] text-zinc-400">rlbazar.com</p>
+            </div>
+          </div>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Your premier destination for stylish Gent's Wear and soft, comfortable Baby Shop apparel in Bangladesh. Quality guaranteed with fast home delivery.
+          </p>
+          <div class="flex items-center gap-3 pt-1">
+            <a href="https://www.facebook.com/search/top?q=RL%20Bazar" target="_blank" rel="noopener noreferrer" aria-label="Facebook RL Bazar" class="w-10 h-10 rounded-xl bg-card hover:bg-crimson border border-zinc-800 flex items-center justify-center text-white transition-colors">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="https://www.tiktok.com/@rl.bazar.baby.sho" target="_blank" rel="noopener noreferrer" aria-label="TikTok RL Bazar Baby Shop" class="w-10 h-10 rounded-xl bg-card hover:bg-crimson border border-zinc-800 flex items-center justify-center text-white transition-colors">
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+            <a href="https://wa.me/8801987007398" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp RL Bazar" class="w-10 h-10 rounded-xl bg-card hover:bg-emerald-600 border border-zinc-800 flex items-center justify-center text-white transition-colors">
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Direct Department Contacts -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-white">Direct Order Hotlines</h4>
+          <ul class="space-y-3 text-sm">
+            <li class="p-3 rounded-xl bg-card border border-zinc-800/90">
+              <p class="text-xs text-zinc-400 font-medium">RL Bazar &amp; Baby Shop (WhatsApp)</p>
+              <a href="https://wa.me/8801987007398" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline font-bold flex items-center gap-2 mt-1">
+                <i class="fa-brands fa-whatsapp"></i> 01987007398
+              </a>
+            </li>
+            <li class="p-3 rounded-xl bg-card border border-zinc-800/90">
+              <p class="text-xs text-zinc-400 font-medium">RL Bazar Gent's Wear (Call)</p>
+              <a href="tel:+8801612168888" class="text-crimson hover:underline font-bold flex items-center gap-2 mt-1">
+                <i class="fa-solid fa-phone"></i> 01612168888
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-white">Categories</h4>
+          <ul class="space-y-2.5 text-sm text-zinc-400">
+            <li><a href="#collections" onclick="filterProducts('gents')" class="hover:text-crimson transition-colors">Gent's Premium Panjabi</a></li>
+            <li><a href="#collections" onclick="filterProducts('gents')" class="hover:text-crimson transition-colors">Slim-Fit Formal &amp; Casual Shirts</a></li>
+            <li><a href="#collections" onclick="filterProducts('baby')" class="hover:text-crimson transition-colors">Newborn &amp; Baby Cotton Rompers</a></li>
+            <li><a href="#collections" onclick="filterProducts('baby')" class="hover:text-crimson transition-colors">Kids Party &amp; Festive Sets</a></li>
+            <li><a href="#collections" onclick="filterProducts('bestseller')" class="hover:text-crimson transition-colors">Best Selling Combos</a></li>
+          </ul>
+        </div>
+
+        <!-- Official Links -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-white">Official Presence</h4>
+          <ul class="space-y-3 text-sm text-zinc-400">
+            <li class="flex items-center gap-2.5">
+              <i class="fa-solid fa-globe text-crimson"></i>
+              <a href="https://rlbazar.com" target="_blank" rel="noopener noreferrer" class="hover:text-white">rlbazar.com</a>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <i class="fa-brands fa-facebook text-crimson"></i>
+              <a href="https://www.facebook.com/search/top?q=RL%20Bazar" target="_blank" rel="noopener noreferrer" class="hover:text-white">Facebook: RL Bazar</a>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <i class="fa-brands fa-tiktok text-crimson"></i>
+              <a href="https://www.tiktok.com/@rl.bazar.baby.sho" target="_blank" rel="noopener noreferrer" class="hover:text-white break-all">@rl.bazar.baby.sho</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+        <p>&copy; 2026 <span class="text-white font-semibold">RL Bazar</span> (rlbazar.com). All Rights Reserved.</p>
+        <p>RL Bazar &amp; Baby Shop • RL Bazar Gent's Wear</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 6. SLIDE-OUT SHOPPING CART & CHECKOUT DRAWER -->
+  <div id="cartOverlay" onclick="toggleCart(false)" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  
+  <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-charcoal border-l border-zinc-800 z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Cart Header -->
+    <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <i class="fa-solid fa-bag-shopping text-crimson text-xl"></i>
+        <h3 class="text-lg font-black text-white">Your Shopping Bag</h3>
+      </div>
+      <button onclick="toggleCart(false)" class="w-9 h-9 rounded-xl bg-card hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Cart Items Container -->
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <!-- Populated dynamically -->
+    </div>
+
+    <!-- Cart Footer / Checkout Actions -->
+    <div id="cartFooter" class="p-5 border-t border-zinc-800 bg-obsidian space-y-4 hidden">
+      <div class="space-y-1.5 text-sm">
+        <div class="flex justify-between text-zinc-400">
+          <span>Subtotal</span>
+          <span id="cartSubtotal" class="font-semibold text-white">৳0</span>
+        </div>
+        <div class="flex justify-between text-zinc-400">
+          <span>Delivery Charge</span>
+          <span class="text-emerald-400 font-medium">৳80 (All BD)</span>
+        </div>
+        <div class="flex justify-between text-base font-black text-white pt-2 border-t border-zinc-800">
+          <span>Total Payable</span>
+          <span id="cartTotal" class="text-crimson">৳0</span>
+        </div>
+      </div>
+
+      <!-- Customer Quick Details for COD -->
+      <div class="space-y-2.5 pt-1">
+        <input type="text" id="custName" placeholder="Your Full Name *" class="w-full bg-card border border-zinc-800 focus:border-crimson rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none" />
+        <input type="tel" id="custPhone" placeholder="Mobile Number (e.g., 017XXXXXXXX) *" class="w-full bg-card border border-zinc-800 focus:border-crimson rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none" />
+        <input type="text" id="custAddress" placeholder="Full Delivery Address (District / Area) *" class="w-full bg-card border border-zinc-800 focus:border-crimson rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none" />
+      </div>
+
+      <!-- Order Buttons -->
+      <div class="grid grid-cols-1 gap-2.5">
+        <button 
+          onclick="orderCartViaWhatsApp()" 
+          class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
+        >
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Order to WhatsApp (01987007398)
+        </button>
+        <button 
+          onclick="placeDirectCODOrder()" 
+          class="w-full py-3 rounded-xl bg-crimson hover:bg-crimson-dark text-white font-bold text-sm flex items-center justify-center gap-2 transition-all"
+        >
+          <i class="fa-solid fa-check-circle"></i> Confirm Cash on Delivery Order
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CUSTOM TOAST / ORDER CONFIRMATION MODAL (No alert() used!) -->
+  <div id="toastBox" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="bg-zinc-900 border border-crimson text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold">
+      <i class="fa-solid fa-circle-check text-crimson text-lg"></i>
+      <span id="toastMessage">Added to bag!</span>
+    </div>
+  </div>
+
+  <!-- Order Success Modal -->
+  <div id="orderSuccessModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-card border border-zinc-800 rounded-3xl max-w-md w-full p-6 sm:p-8 text-center space-y-4 red-glow">
+      <div class="w-16 h-16 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-3xl mx-auto">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </div>
+      <h3 class="text-2xl font-black text-white">Order Received!</h3>
+      <p id="orderSuccessText" class="text-sm text-zinc-300 leading-relaxed"></p>
+      <div class="pt-2 flex flex-col gap-2.5">
+        <a href="tel:+8801612168888" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold">
+          <i class="fa-solid fa-phone text-crimson mr-1"></i> Need Urgent Help? Call 01612168888
+        </a>
+        <button onclick="closeSuccessModal()" class="w-full py-3 rounded-xl bg-crimson hover:bg-crimson-dark text-white font-bold text-sm">
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. FLOATING QUICK-CONTACT BUTTONS -->
+  <div class="fixed bottom-5 right-5 z-40 flex flex-col gap-3">
+    <!-- Floating Call Button (Gent's Wear) -->
+    <a 
+      href="tel:+8801612168888" 
+      title="Call RL Bazar Gent's Wear: 01612168888"
+      class="group flex items-center gap-2 bg-crimson hover:bg-crimson-dark text-white p-3.5 rounded-full shadow-lg shadow-crimson/40 transition-all hover:scale-105"
+    >
+      <i class="fa-solid fa-phone text-lg"></i>
+      <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap text-xs font-bold pr-0 group-hover:pr-2">
+        Call: 01612168888
+      </span>
+    </a>
+
+    <!-- Floating WhatsApp Button (RL Bazar & Baby Shop) -->
+    <a 
+      href="https://wa.me/8801987007398?text=Assalamu%20Alaikum%20RL%20Bazar!%20I%20need%20help%20with%20an%20order." 
+      target="_blank" 
+      rel="noopener noreferrer"
+      title="WhatsApp RL Bazar & Baby Shop: 01987007398"
+      class="group flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-lg shadow-emerald-600/40 transition-all hover:scale-105"
+    >
+      <i class="fa-brands fa-whatsapp text-xl"></i>
+      <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap text-xs font-bold pr-0 group-hover:pr-2">
+        WP: 01987007398
+      </span>
+    </a>
+  </div>
+
+  <!-- SUPABASE CONFIG: Replace with your Supabase project URL and anon key -->
+  <script>
+    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const supabaseClient = (SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  </script>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // Product Catalog Data for RL Bazar (Gent's Wear & Baby Shop)
+    const products = [
+      {
+        id: 1,
+        name: "Royal Crimson & Black Embroidered Panjabi",
+        category: "gents",
+        division: "RL Bazar Gent's Wear",
+        price: 1850,
+        oldPrice: 2200,
+        bestseller: true,
+        sizes: ["M", "L", "XL", "XXL"],
+        image: "https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Premium+Panjabi"
+      },
+      {
+        id: 2,
+        name: "Cute Organic Cotton Baby Romper & Cap Set",
+        category: "baby",
+        division: "RL Bazar & Baby Shop",
+        price: 750,
+        oldPrice: 950,
+        bestseller: true,
+        sizes: ["0-6M", "6-12M", "1-2Y"],
+        image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Baby+Romper+Set"
+      },
+      {
+        id: 3,
+        name: "Midnight Black Slim-Fit Formal Shirt",
+        category: "gents",
+        division: "RL Bazar Gent's Wear",
+        price: 1350,
+        oldPrice: 1650,
+        bestseller: true,
+        sizes: ["S", "M", "L", "XL"],
+        image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Formal+Shirt"
+      },
+      {
+        id: 4,
+        name: "Little Gentleman 3-Piece Baby Party Suit",
+        category: "baby",
+        division: "RL Bazar & Baby Shop",
+        price: 1290,
+        oldPrice: 1550,
+        bestseller: true,
+        sizes: ["6-12M", "1-2Y", "2-4Y"],
+        image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Baby+Party+Suit"
+      },
+      {
+        id: 5,
+        name: "Urban Racer Red-Trim Men's Bomber Jacket",
+        category: "gents",
+        division: "RL Bazar Gent's Wear",
+        price: 2450,
+        oldPrice: 2900,
+        bestseller: false,
+        sizes: ["M", "L", "XL"],
+        image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Bomber+Jacket"
+      },
+      {
+        id: 6,
+        name: "Soft Fleece Baby Winter Hoodie & Jogger Set",
+        category: "baby",
+        division: "RL Bazar & Baby Shop",
+        price: 990,
+        oldPrice: 1200,
+        bestseller: false,
+        sizes: ["0-6M", "6-12M", "1-2Y", "2-4Y"],
+        image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Baby+Hoodie+Set"
+      },
+      {
+        id: 7,
+        name: "Signature Crimson Collar Men's Polo T-Shirt",
+        category: "gents",
+        division: "RL Bazar Gent's Wear",
+        price: 890,
+        oldPrice: 1100,
+        bestseller: false,
+        sizes: ["S", "M", "L", "XL"],
+        image: "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Polo+T-Shirt"
+      },
+      {
+        id: 8,
+        name: "Kids Festive Red & Gold Panjabi Pajama Set",
+        category: "baby",
+        division: "RL Bazar & Baby Shop",
+        price: 1150,
+        oldPrice: 1400,
+        bestseller: true,
+        sizes: ["1-2Y", "2-4Y", "4-6Y"],
+        image: "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=600&q=80",
+        fallback: "https://placehold.co/500x600/18181D/E50914?text=Kids+Festive+Set"
+      }
+    ];
+
+    // State
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let selectedSizes = {}; // { productId: 'M' }
+    let cart = [];
+
+    // Initialize default sizes
+    products.forEach(p => {
+      selectedSizes[p.id] = p.sizes[0];
+    });
+
+    // Render Products
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      const filtered = products.filter(item => {
+        const matchesFilter =
+          currentFilter === 'all' ||
+          (currentFilter === 'gents' && item.category === 'gents') ||
+          (currentFilter === 'baby' && item.category === 'baby') ||
+          (currentFilter === 'bestseller' && item.bestseller);
+
+        const matchesSearch =
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.division.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      grid.innerHTML = filtered.map(product => {
+        const activeSize = selectedSizes[product.id];
+        const wpText = encodeURIComponent(
+          `Assalamu Alaikum RL Bazar! I want to order:\n• Product: ${product.name}\n• Category: ${product.division}\n• Size: ${activeSize}\n• Price: ৳${product.price}`
+        );
+
+        return `
+          <div class="group rounded-2xl bg-card border border-zinc-800/90 hover:border-crimson/70 overflow-hidden flex flex-col justify-between transition-all duration-300 red-glow-hover">
+            <div>
+              <!-- Image Container -->
+              <div class="relative h-64 overflow-hidden bg-zinc-900">
+                <img 
+                  src="${product.image}" 
+                  onerror="this.src='${product.fallback}'"
+                  alt="${product.name}" 
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                  <span class="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider text-white border border-zinc-700">
+                    ${product.category === 'gents' ? "Gent's Wear" : "Baby Shop"}
+                  </span>
+                  ${product.bestseller ? `<span class="px-2.5 py-1 rounded-lg bg-crimson text-[10px] font-extrabold uppercase tracking-wider text-white shadow">Best Seller</span>` : ''}
+                </div>
+              </div>
+
+              <!-- Details -->
+              <div class="p-4 space-y-3">
+                <div>
+                  <p class="text-[11px] font-semibold text-crimson">${product.division}</p>
+                  <h3 class="text-base font-bold text-white line-clamp-2 mt-0.5 leading-snug">${product.name}</h3>
+                </div>
+
+                <!-- Price -->
+                <div class="flex items-baseline gap-2">
+                  <span class="text-xl font-black text-white">৳${product.price.toLocaleString()}</span>
+                  <span class="text-xs text-zinc-500 line-through">৳${product.oldPrice.toLocaleString()}</span>
+                </div>
+
+                <!-- Size Selector -->
+                <div>
+                  <span class="text-[11px] text-zinc-400 block mb-1.5">Select Size:</span>
+                  <div class="flex flex-wrap gap-1.5">
+                    ${product.sizes.map(size => `
+                      <button 
+                        onclick="selectSize(${product.id}, '${size}')"
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                          activeSize === size 
+                            ? 'bg-crimson border-crimson text-white' 
+                            : 'bg-charcoal border-zinc-700 text-zinc-300 hover:border-zinc-500'
+                        }"
+                      >
+                        ${size}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Action Buttons -->
+            <div class="p-4 pt-0 space-y-2">
+              <button 
+                onclick="addToCart(${product.id})"
+                class="w-full py-2.5 rounded-xl bg-white hover:bg-crimson text-black hover:text-white font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <i class="fa-solid fa-cart-plus"></i> Add to Bag
+              </button>
+              <a 
+                href="https://wa.me/8801987007398?text=${wpText}" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="w-full py-2.5 rounded-xl bg-emerald-600/15 hover:bg-emerald-600 border border-emerald-600/40 text-emerald-400 hover:text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+              >
+                <i class="fa-brands fa-whatsapp text-sm"></i> Order via WhatsApp
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Select Size Handler
+    function selectSize(productId, size) {
+      selectedSizes[productId] = size;
+      renderProducts();
+    }
+
+    // Category Filter Handler
+    function filterProducts(category) {
+      currentFilter = category;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === category) {
+          btn.classList.remove('bg-card', 'text-zinc-300', 'border', 'border-zinc-800');
+          btn.classList.add('bg-crimson', 'text-white');
+        } else {
+          btn.classList.add('bg-card', 'text-zinc-300', 'border', 'border-zinc-800');
+          btn.classList.remove('bg-crimson', 'text-white');
+        }
+      });
+      renderProducts();
+    }
+
+    // Search Handler
+    function handleSearch(val) {
+      searchQuery = val;
+      renderProducts();
+    }
+
+    function resetFilters() {
+      searchQuery = '';
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      filterProducts('all');
+    }
+
+    // Cart Functions
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const size = selectedSizes[productId];
+      const existing = cart.find(item => item.id === productId && item.size === size);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          division: product.division,
+          price: product.price,
+          image: product.image,
+          fallback: product.fallback,
+          size: size,
+          qty: 1
+        });
+      }
+
+      updateCartUI();
+      showToast(`Added "${product.name}" (${size}) to bag!`);
+    }
+
+    function updateQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      const container = document.getElementById('cartItemsContainer');
+      const footer = document.getElementById('cartFooter');
+      const subtotalEl = document.getElementById('cartSubtotal');
+      const totalEl = document.getElementById('cartTotal');
+
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      badge.textContent = totalItems;
+
+      if (cart.length === 0) {
+        footer.classList.add('hidden');
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-12 space-y-3">
+            <div class="w-16 h-16 rounded-full bg-card border border-zinc-800 flex items-center justify-center text-zinc-500 text-2xl">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <h4 class="text-base font-bold text-white">Your bag is empty</h4>
+            <p class="text-xs text-zinc-400 max-w-xs">Explore RL Bazar Gent's Wear &amp; Baby Shop collections and add your favorite outfits!</p>
+          </div>
+        `;
+        return;
+      }
+
+      footer.classList.remove('hidden');
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const delivery = 80;
+      const total = subtotal + delivery;
+
+      subtotalEl.textContent = `৳${subtotal.toLocaleString()}`;
+      totalEl.textContent = `৳${total.toLocaleString()}`;
+
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="flex gap-3.5 p-3 rounded-2xl bg-card border border-zinc-800">
+          <img src="${item.image}" onerror="this.src='${item.fallback}'" alt="${item.name}" class="w-16 h-20 rounded-xl object-cover shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-[10px] font-bold text-crimson uppercase">${item.division}</p>
+            <h4 class="text-xs sm:text-sm font-bold text-white truncate">${item.name}</h4>
+            <p class="text-xs text-zinc-400 mt-0.5">Size: <span class="text-white font-semibold">${item.size}</span></p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-sm font-black text-white">৳${(item.price * item.qty).toLocaleString()}</span>
+              <div class="flex items-center gap-2 bg-charcoal border border-zinc-700 rounded-lg px-2 py-0.5">
+                <button onclick="updateQty(${idx}, -1)" class="text-zinc-400 hover:text-white text-xs font-bold px-1">-</button>
+                <span class="text-xs font-bold text-white">${item.qty}</span>
+                <button onclick="updateQty(${idx}, 1)" class="text-zinc-400 hover:text-white text-xs font-bold px-1">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Drawer & Modal Toggles
+    function toggleCart(open) {
+      const overlay = document.getElementById('cartOverlay');
+      const drawer = document.getElementById('cartDrawer');
+      if (open) {
+        overlay.classList.remove('hidden');
+        drawer.classList.remove('translate-x-full');
+      } else {
+        overlay.classList.add('hidden');
+        drawer.classList.add('translate-x-full');
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastBox');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2800);
+    }
+
+    // Send Full Cart Order to WhatsApp (01987007398)
+    function orderCartViaWhatsApp() {
+      if (cart.length === 0) return;
+      const name = document.getElementById('custName').value.trim() || 'Customer';
+      const phone = document.getElementById('custPhone').value.trim() || 'Not provided';
+      const address = document.getElementById('custAddress').value.trim() || 'Not provided';
+
+      const itemsList = cart.map((item, i) => 
+        `${i + 1}. ${item.name} [Size: ${item.size}] x${item.qty} = ৳${item.price * item.qty}`
+      ).join('\n');
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const total = subtotal + 80;
+
+      const message = encodeURIComponent(
+        `*NEW ORDER — RL BAZAR (rlbazar.com)*\n\n` +
+        `*Customer:* ${name}\n` +
+        `*Phone:* ${phone}\n` +
+        `*Address:* ${address}\n\n` +
+        `*Order Items:*\n${itemsList}\n\n` +
+        `*Subtotal:* ৳${subtotal}\n` +
+        `*Delivery:* ৳80\n` +
+        `*Total Payable:* ৳${total}`
+      );
+
+      window.open(`https://wa.me/8801987007398?text=${message}`, '_blank', 'noopener,noreferrer');
+    }
+
+    // Place Direct COD Order (saved to Supabase when configured)
+    async function placeDirectCODOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      if (!name || !phone || !address) { showToast('Please enter your Name, Phone & Delivery Address!'); return; }
+      if (!cart.length) { showToast('Your cart is empty!'); return; }
+      if (!supabaseClient) { showToast('Order saving is not configured yet. Please use WhatsApp order for now.'); return; }
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const total = subtotal + 80;
+      const orderPayload = {
+        customer_name: name, customer_phone: phone, customer_address: address,
+        items: cart.map(item => ({id:item.id, name:item.name, size:item.size, qty:item.qty, unit_price:item.price, line_total:item.price*item.qty})),
+        subtotal, delivery_charge: 80, total, status: 'New'
+      };
+      const { error } = await supabaseClient.from('orders').insert(orderPayload);
+      if (error) { console.error('Order save failed:', error); showToast('Order could not be saved. Please try WhatsApp.'); return; }
+      toggleCart(false);
+      document.getElementById('orderSuccessText').innerHTML = `Thank you, <strong class="text-white">${name}</strong>! Your Cash on Delivery order of <strong class="text-crimson">৳${total.toLocaleString()}</strong> has been saved. Our team will confirm shortly via <strong class="text-white">${phone}</strong>.`;
+      const modal = document.getElementById('orderSuccessModal'); modal.classList.remove('hidden'); modal.classList.add('flex');
+      cart = []; updateCartUI();
+    }
+
+    function closeSuccessModal() {
+      const modal = document.getElementById('orderSuccessModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Initial Render
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProducts();
+      updateCartUI();
+    });
+  </script>
+</body>
+</html>
