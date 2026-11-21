@@ -6,7 +6,7 @@
 <section id="dashboard" class="hidden"><div class="flex flex-wrap items-center justify-between gap-3 mb-5"><h2 class="text-xl font-bold">Orders</h2><button id="refreshBtn" class="px-4 py-2 rounded bg-zinc-800 hover:bg-zinc-700">Refresh</button></div><div id="orderList" class="space-y-4"></div><p id="dashMessage" class="text-sm text-gray-400 mt-4"></p></section>
 </div>
 <script>
-const SUPABASE_URL='YOUR_SUPABASE_PROJECT_URL'; const SUPABASE_ANON_KEY='YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL='https://mvbwsgpjipxzhihzeagz.supabase.co'; const SUPABASE_ANON_KEY='sb_publishable_ELcmYvjoxaug6TDhOudS6A_r0JCaBQo';
 const sb=(SUPABASE_URL.startsWith('https://')&&SUPABASE_ANON_KEY!=='YOUR_SUPABASE_ANON_KEY')?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
 const loginCard=document.getElementById('loginCard'),dashboard=document.getElementById('dashboard'),logoutBtn=document.getElementById('logoutBtn');
 function showMessage(id,msg){document.getElementById(id).textContent=msg;}
